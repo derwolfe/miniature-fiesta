@@ -21,9 +21,20 @@
   (let [header (merge {:headers headers})]
     (http/get uri header)))
 
+(defn fetch-and-do-a-thing!
+  [uri headers]
+  (-> (md/chain
+       (fetch! uri headers)
+       :body
+       bs/to-string)
+      (md/catch Exception
+          (fn [exc]
+            (bad-log "error fetching:" (.getMessage exc))
+            ::fetch-error))))
+
 (defn fetch-consumer!
   [uri headers]
-  @(-> (fetch! uri headers)
+  (-> (fetch! uri headers)
        (md/catch Exception (fn [exc]
                              (bad-log "error fetching:" (.getMessage exc))
                              ::fetch-error))))
