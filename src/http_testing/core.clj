@@ -6,13 +6,27 @@
    [cheshire.core :as json]
    [byte-streams :as bs]
    [compojure.core :as compojure :refer [GET]]
-   [compojure.route :as route])
+   [compojure.route :as route]
+   [clojure.string :as str]
+   [taoensso.timbre :as timbre])
   (:gen-class))
 
-(defn fetch
+
+(defn bad-log
+  [msg error]
+  (println (str/join " " msg error)))
+
+(defn fetch!
   [uri headers]
   (let [header (merge {:headers headers})]
     (http/get uri header)))
+
+(defn fetch-consumer!
+  [uri headers]
+  @(-> (fetch! uri headers)
+       (md/catch Exception (fn [exc]
+                             (bad-log "error fetching:" (.getMessage exc))
+                             ::fetch-error))))
 
 ;; test server
 (defn success-handler

@@ -13,4 +13,11 @@
 
 (deftest fetch-test
   (testing "logs error"
-    @(core/fetch (str/join "/" [base-uri "404"]) {})))
+    (let [log (atom "")
+          log-error (fn [error rest]
+                      (reset! log (str/join " " [error rest])))]
+      (with-redefs [core/bad-log log-error]
+        (let [result (core/fetch-consumer! (str/join "/" [base-uri "404"]) {})]
+          (is (identical? :http-testing.core/fetch-error result)
+              "returns a fetch-error keyword")
+          (is (= "error fetching: status: 404" @log)))))))
