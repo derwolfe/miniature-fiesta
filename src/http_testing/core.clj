@@ -21,23 +21,25 @@
 
 (defn fetch-and-do-a-thing!
   [uri headers]
-  @(-> (md/chain
-        (fetch! uri headers)
-        :body
-        bs/to-string
-        #(json/parse-string % true))
-       (md/catch Exception
-                 (fn [exc]
-                   (bad-log "error fetching:" (.getMessage exc))
-                   ::fetch-error))))
+  (->
+   (md/chain
+    (fetch! uri headers)
+    :body
+    bs/to-string
+    #(json/parse-string % true))
+   (md/catch Exception
+             (fn [exc]
+               (bad-log "error fetching:" (.getMessage exc))
+               ::fetch-error))))
 
 (defn fetch-consumer!
   [uri headers]
-  @(-> (fetch! uri headers)
-       (md/catch Exception
-                 (fn [exc]
-                   (bad-log "error fetching:" (.getMessage exc))
-                   ::fetch-error))))
+  (->
+   (fetch! uri headers)
+   (md/catch Exception
+             (fn [exc]
+               (bad-log "error fetching:" (.getMessage exc))
+               ::fetch-error))))
 
 ;; test server
 (defn success-handler
