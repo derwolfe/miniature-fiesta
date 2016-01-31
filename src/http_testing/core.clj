@@ -17,15 +17,15 @@
 
 (defn fetch!
   [uri headers]
-  (let [header (merge {:headers headers})]
-    (http/get uri header)))
+  (http/get uri headers))
 
 (defn fetch-and-do-a-thing!
   [uri headers]
   @(-> (md/chain
         (fetch! uri headers)
         :body
-        bs/to-string)
+        bs/to-string
+        #(json/parse-string % true))
        (md/catch Exception
                  (fn [exc]
                    (bad-log "error fetching:" (.getMessage exc))
@@ -55,7 +55,7 @@
 (defn no-json-handler
   [req]
   {:status 200
-   :headers {"content-type" "text/plain"}
+   :headers {"content-type" "text/html"}
    :body "hi"})
 
 (def handler
