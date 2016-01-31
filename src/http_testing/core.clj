@@ -52,12 +52,6 @@
    :headers {"content-type" "application/json"}
    :body (json/generate-string {:code 404 :data "not here"})})
 
-(defn forbidden-handler
-  [req]
-  {:status 403
-   :headers {"content-type" "application/json"}
-   :body (json/generate-string {:code 404 :data "go away, you are forbidden"})})
-
 (defn no-json-handler
   [req]
   {:status 200
@@ -67,7 +61,6 @@
 (def handler
   (compojure/routes
    (GET "/200" [] success-handler)
-   (GET "/403" [] forbidden-handler)
    (GET "/404" [] not-found-handler)
    (GET "/no-json" [] no-json-handler)))
 
