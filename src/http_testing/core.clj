@@ -11,7 +11,6 @@
    [taoensso.timbre :as timbre])
   (:gen-class))
 
-
 (defn bad-log
   [msg error]
   (println (str/join " " msg error)))
